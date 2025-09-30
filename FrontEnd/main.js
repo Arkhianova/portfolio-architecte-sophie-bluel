@@ -1,15 +1,15 @@
 let currentCategory = 0;
 let initAllWorks = [];
 let filteredWorks = [];
-let allCategories = []; 
+let allCategories = [];
+
 async function getWorks() {
   try {
     const response = await fetch("http://localhost:5678/api/works");
     const works = await response.json();
     return works;
-
   } catch (error) {
-    console.error("Erreur :", error);
+    console.error("Erreur :", error.message);
     return [];
   }
 }
@@ -39,26 +39,28 @@ function createMenu(arrayOfCat) {
   h2.insertAdjacentElement("afterend", menu);   // Insère menu juste après le <h2> 
 
   if(arrayOfCat.length === 0) {
-    document.querySelector(".gallery").innerHTML = "<p>Erreur de chargement des catégories</p>";
+    document.querySelector("menu").innerHTML = "";
     return;
   }
   else {
     arrayOfCat.forEach(category => { 
     const li = document.createElement("li"); 
-    const button = document.createElement("button"); 
+    const button = document.createElement("button");
     button.textContent = category.name;
     button.setAttribute("data-id", category.id);
     li.appendChild(button); 
     menu.appendChild(li); 
   });
   }
-  //creer dynamiquement les autres boutons du menu
-  
 }
 function createGallery(works) {
   const gallery = document.querySelector(".gallery");
-
-    works.forEach(work => {
+  if(works.length === 0) {
+    gallery.innerHTML = '<p class="empty">"Aucune œuvre disponible"</p>';
+  
+  }
+  else { 
+     works.forEach(work => {
       
       const figure = document.createElement("figure");
 
@@ -75,7 +77,9 @@ function createGallery(works) {
 
       // Ajout dans la galerie
       gallery.appendChild(figure);
-    });
+    }); 
+  }
+   
 }
 async function init() {
   initAllWorks = await getWorks();
@@ -103,7 +107,7 @@ function attachEventListeners () {
     })
   })
 }
-function toggleActive () {
+function toggleActive (str, arr) {
   const menuButton = document.querySelectorAll("menu button");
 
   for (let i = 0; i < menuButton.length; i++) {
