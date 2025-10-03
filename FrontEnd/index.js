@@ -1,3 +1,4 @@
+// Script pour gérer l'affichage des œuvres, des catégories et le mode edit
 let currentCategory = 0;
 let initAllWorks = [];
 let filteredWorks = [];
@@ -31,12 +32,13 @@ function createMenu(arrayOfCat) {
   const defaultButton = document.createElement("button"); // creation premier button DANS premier li
   defaultButton.setAttribute("data-id", 0); // ajout attribut premier button
   defaultButton.textContent = "Tous"; // initialisation premier bouton avec "Tous"
+  defaultButton.classList.add('hoverBtn');
   defaultLi.appendChild(defaultButton); //place button dans li ==> <li><button data-id..>Tous</button></li>
   menu.appendChild(defaultLi); // place li dans menu ==> <menu><li><button>Tous</button></li></menu>
 
-  //On place <menu></menu> après le h2
-  const h2 = document.querySelector("#portfolio h2");  // selection <h2> de la section#portfolio 
-  h2.insertAdjacentElement("afterend", menu);   // Insère menu juste après le <h2> 
+  //On place <menu></menu> après la div.portfolio-header
+  const portfolioHeader = document.querySelector(".portfolio-header");  // selection <div class="portfolio-header"> de la section#portfolio
+  portfolioHeader.insertAdjacentElement("afterend", menu);   // Insère menu juste après le <div class="portfolio-header">
 
   if(arrayOfCat.length === 0) {
     document.querySelector("menu").innerHTML = "";
@@ -48,6 +50,7 @@ function createMenu(arrayOfCat) {
     const button = document.createElement("button");
     button.textContent = category.name;
     button.setAttribute("data-id", category.id);
+    button.classList.add('hoverBtn');
     li.appendChild(button); 
     menu.appendChild(li); 
   });
@@ -88,6 +91,7 @@ async function init() {
   createMenu(allCategories);
   attachEventListeners();
   toggleActive();
+  handleEditMode();
 }
 function attachEventListeners () {
   const buttonsArray = document.querySelectorAll("menu button");
@@ -114,6 +118,52 @@ function toggleActive (str, arr) {
     i === currentCategory 
       ? menuButton[i].classList.add("active") 
       : menuButton[i].classList.remove("active");
+  }
+}
+function handleEditMode() {
+  const isLogged = localStorage.getItem("isLogged");
+  
+  if (isLogged) {
+    const banner = document.createElement("div");
+    banner.classList.add("editBanner");
+    banner.innerHTML = "<i class=\"fa-regular fa-pen-to-square\"></i><p>Mode édition</p>";
+    document.body.prepend(banner);
+
+    const button = document.createElement("button");
+    button.classList.add("editButton");
+    button.innerHTML = "<i class=\"fa-regular fa-pen-to-square\"></i><p id='button'>modifier</p>";
+
+    const h2 = document.querySelector("#portfolio h2");
+    h2.insertAdjacentElement("afterend", button);
+    
+    const menu = document.querySelector("menu");
+    menu.remove();
+
+     // --- Modifier le texte Login → Logout ---
+  const loginLi = document.querySelector("header nav ul li a[href*='login']");
+  if (loginLi) {
+    if (isLogged) {
+      loginLi.innerHTML = "logout";
+      loginLi.style.cursor = "default";
+
+      // Ajouter un click pour déconnexion
+      loginLi.addEventListener("click", (event) => {
+        event.preventDefault();
+        localStorage.removeItem("isLogged");
+        localStorage.removeItem("token");
+        localStorage.removeItem("userId");
+        window.location.reload(); // recharge la page pour réinitialiser le mode
+      });
+    } else {
+      loginLi.innerHTML = "Login";
+    }
+  }
+
+  } else {
+    const el = document.querySelector(".editBanner");
+    el.remove();
+    const elem = document.querySelector(".editButton");
+    elem.remove();
   }
 }
 

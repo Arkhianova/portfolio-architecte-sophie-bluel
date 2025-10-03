@@ -4,7 +4,6 @@
   font-size: 0.875rem;
   text-decoration: solid underline #3D3D3D;
 }
-
 body {
   height: 100vh;
   display: flex;
@@ -48,7 +47,6 @@ input {
   color: #3D3D3D;
   font-weight: medium;
 }
-
 input[type="submit"]{
 	font-family: 'Syne';
 	font-weight: 700;

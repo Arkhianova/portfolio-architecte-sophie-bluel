@@ -97,7 +97,7 @@ h2{
 	font-family: 'Syne';
 	font-weight: 700;
 	font-size: 30px;
-	color: #1D6154
+	color: #1D6154;
 }
 nav ul {
 	display: flex;
@@ -110,6 +110,7 @@ nav li {
 }
 li:hover {
 	color: #B1663C;
+  font-weight: bold;
 }
 #introduction {
 	display: flex;
@@ -129,13 +130,11 @@ li:hover {
 #introduction h2 {
 	margin-bottom: 1em;
 }
-
 #introduction p {
 	margin-bottom: 0.5em;
 }
 #portfolio h2 {
 	text-align: center;
-	margin-bottom: 1em;
 }
 .gallery {
 	width: 100%;
@@ -183,4 +182,7 @@ footer nav ul {
 	justify-content: flex-end;
   margin-right: 5rem;
 }
-
+.hoverBtn:hover {
+  background-color: #0E2F28;
+  color: white;
+}
