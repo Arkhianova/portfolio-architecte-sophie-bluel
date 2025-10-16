@@ -356,4 +356,5 @@ function handleEditMode() {
     elem ? elem.remove() : null;
   }
 }
+
 init();
