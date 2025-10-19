@@ -1,2 +1,6 @@
 .idea
+<<<<<<< HEAD
 BackEnd/database.sqlite
+=======
+*.sqlite
+>>>>>>> reorganisation

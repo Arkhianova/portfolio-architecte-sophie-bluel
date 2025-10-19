@@ -82,11 +82,21 @@ dialog {
   justify-content: space-between;
   width: 39rem;
   height: 42rem;
-    section {
-      /* border-bottom: 2px solid #B3B3B3; */
-      padding-bottom: 2rem;
-    }
-     
+
+  section {
+    border-bottom: 3px solid #da1717;
+    padding-bottom: 2rem;
+  }
+
+
+}
+
+dialog:has(button[action='add']) .fa-arrow-left {
+  visibility: hidden;
+}
+
+dialog:has(button[action='send']) .fa-arrow-left {
+  visibility: visible;
 }
 
 .modalHeader {
@@ -94,11 +104,8 @@ dialog {
   display: flex;
   justify-content: space-between;
   width: 100%;
-
-  .fa-arrow-left {
-    visibility: hidden;
-  }
 }
+
 
 .modalTitle {
   font-family: 'Work', sans-serif;
@@ -114,7 +121,8 @@ dialog {
   grid-template-rows: repeat(3, 1fr);
   gap: 0.3rem;
   height: 65%;
-  margin: 0 5.875rem;
+  margin: 0 5.25rem;
+
   /* margin: 0 5.25rem; */
   /* border-bottom: 2px solid #B3B3B3; */
   figure {
@@ -142,6 +150,7 @@ dialog {
   /* min-height: 400px; */
   height: 65%;
   margin: 0 5.25rem;
+
   form {
     display: flex;
     flex-direction: column;
@@ -149,25 +158,30 @@ dialog {
     width: 96%;
     margin: 0 0.625rem;
     height: 100%;
+
     .formGroup {
       display: flex;
       flex-direction: column;
       gap: 0.625rem;
     }
-  
-   
+
+
   }
+
   .formGroup input,
   .formGroup select {
     height: 51px;
     filter: drop-shadow(0px 4px 14px rgba(0, 0, 0, 0.1));
     border: none;
   }
+
   select {
     appearance: none;
   }
-   form .formGroup select {
+
+  form .formGroup select {
     border: none;
+
     option {
       height: 5rem;
       box-sizing: border-box;
@@ -175,6 +189,7 @@ dialog {
       /* border: 2px solid blue; */
     }
   }
+
   .imageUpload {
     display: flex;
     flex-direction: column;
@@ -185,20 +200,24 @@ dialog {
     box-sizing: border-box;
     /* gap: 0.5rem; */
     height: 169px;
-      .imgPreview {
-        /* width: auto; */
-        font-size: 4rem;
-        color: #B9C5CC;
-      }
-      .imgPreview.imgAdded {
-            height: 100%;
-      }
-      p {
-        font-family: 'Work', sans-serif;
-        font-weight: 400;
-        font-size: 0.625rem;
-        color: #444444;
-      }
+
+    .imgPreview {
+      /* width: auto; */
+      font-size: 4rem;
+      color: #B9C5CC;
+    }
+
+    .imgPreview.imgAdded {
+      height: 100%;
+    }
+
+    p {
+      font-family: 'Work', sans-serif;
+      font-weight: 400;
+      font-size: 0.625rem;
+      color: #444444;
+    }
+
     .fileLabel {
       background-color: #CBD6DC;
       color: #306685;
@@ -209,6 +228,7 @@ dialog {
       border-radius: 50px;
     }
   }
+
   .error {
     font-family: 'Work', sans-serif;
     font-weight: 400;
@@ -221,6 +241,7 @@ dialog {
   display: flex;
   justify-content: center;
   padding: 0 0 1.2rem 0;
+
   /* margin: 0 5.875rem; */
   button {
     font-family: 'Syne';

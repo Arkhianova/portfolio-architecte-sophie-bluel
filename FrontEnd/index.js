@@ -1,21 +1,12 @@
-// Script pour gérer l'affichage des œuvres, des catégories et le mode edit
-let currentCategory = 0;
-let initAllWorks = [];
-let filteredWorks = [];
-let allCategories = [];
+import { init } from "./Dom.js";
+import Auth from "./Auth.js";
+import { EditMode } from "./Dom.js";
 
-// function fetchWorks() pour récupérer les œuvres : API GET /works
-async function getWorks() {
-  try {
-    const response = await fetch("http://localhost:5678/api/works");
-    const works = await response.json();
-    console.log(works);
-    return works;
-  } catch (error) {
-    console.error("Erreur :", error.message);
-    return [];
-  }
+init();
+if (Auth.isLogged()) {
+  EditMode.enable();
 }
+<<<<<<< HEAD
 //function fetchCategories() pour récupérer les catégories : API GET /categories
 async function getCategories() {
   try {
@@ -358,3 +349,5 @@ function handleEditMode() {
 }
 
 init();
+=======
+>>>>>>> reorganisation
