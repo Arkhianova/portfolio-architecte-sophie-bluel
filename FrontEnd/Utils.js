@@ -24,7 +24,7 @@ const Utils = {
     if (file.size > maxSize) {
       return false;
     }
-    return true; // 
+    return true; 
   },
   isTitleInputValid() { 
     const input = document.querySelector("#titleInput");

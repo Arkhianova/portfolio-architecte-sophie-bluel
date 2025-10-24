@@ -9,11 +9,10 @@ let allCategories = [];
 
 const Menu = {
   createMenuDefaultBtn() {
-    //le premier bouton par défaut du menu, on le créé directement
-    const defaultLi = document.createElement("li"); // creation premier li du menu
-    const defaultButton = document.createElement("button"); // creation premier button DANS premier li
-    defaultButton.setAttribute("data-id", 0); // ajout attribut premier button
-    defaultButton.textContent = "Tous"; // initialisation premier bouton avec "Tous"
+    const defaultLi = document.createElement("li"); 
+    const defaultButton = document.createElement("button");
+    defaultButton.setAttribute("data-id", 0);
+    defaultButton.textContent = "Tous";
     defaultButton.classList.add("hoverBtn");
     defaultLi.appendChild(defaultButton); //place button dans li ==> <li><button data-id..>Tous</button></li>
     return defaultLi;
@@ -47,9 +46,7 @@ const Menu = {
   toggleActive() {
     const menuButton = document.querySelectorAll("menu button");
     // pour chaque bouton : checker si son index correspond à la catégorie courante
-    // mettre la logique de vérification dans une function nommée isCurrentCategory()
     for (let i = 0; i < menuButton.length; i++) {
-      // comparaison de l'index du bouton avec la catégorie courante : créer function nommée isCurrentCategory()
       i === currentCategory
         ? menuButton[i].classList.add("active")
         : menuButton[i].classList.remove("active");
@@ -57,10 +54,7 @@ const Menu = {
   },
   attachMenuBtnsListeners() {
     const buttonsArray = document.querySelectorAll("menu button");
-    // function anonyme attachFilterWorks() pour filtrer les œuvres au clic sur un bouton du menu : DOM
-    //?? ou function nommée filterWorks()
     buttonsArray.forEach((btn, idx) => {
-      //callback pour chaque bouton / function anonyme filterWorks()
       btn.addEventListener("click", () => {
         currentCategory = idx;
         const categoryId = parseInt(btn.getAttribute("data-id"));
@@ -72,7 +66,6 @@ const Menu = {
         gallery.innerHTML = "";
 
         this.toggleActive();
-        //appel de createGallery avec le tableau filtré ?? ou créer new function updateGallery()
         Gallery.generateGallery(filteredWorks);
       });
     });
@@ -113,7 +106,6 @@ export const Gallery = {
           });
           card.appendChild(iconTrash);
         }
-        // Ajout dans la galerie
         container.appendChild(card);
       });
     }
@@ -169,23 +161,19 @@ export const Modal = {
       }
     });
 
-    // Flèche de retour (toujours la même, peu importe la vue)
+    // Flèche de retour
     const arrowLeft = dialog.querySelector(".fa-arrow-left");
     if (arrowLeft) {
       arrowLeft.addEventListener("click", () => {
         const defaultModal = document.querySelector(".modalSectionDefault");
         if (defaultModal) defaultModal.style.display = "grid";
-        //changer le titre
         document.querySelector(".modalTitle").textContent = "Galerie photo";
-        // Cacher la section ajout
         const addModal = document.querySelector(".modalSectionAdd");
         if (addModal) {
           addModal.innerHTML = "";
           addModal.style.display = "none";
         }
-        //cacher la flèche
         arrowLeft.style.visibility = "hidden";
-        //change bouton attributs
         const footerBtn = dialog.querySelector(".modalFooter button");
         footerBtn.setAttribute("action", "add");
         footerBtn.disabled = false;
@@ -201,7 +189,6 @@ export const Modal = {
       const currentAction = btn.getAttribute("action");
       if (!currentAction) return;
       if (currentAction === "add") {
-        //cacher la modale par defaut
         const defaultModal = document.querySelector(".modalSectionDefault");
         if (!defaultModal) return;
         defaultModal.style.display = "none";
@@ -347,14 +334,12 @@ export const Modal = {
   },
 };
 export const EditMode = {
-  // Active le mode édition si l'utilisateur est connecté
   enable() {
     if (!Auth.isLogged()) return;
     this.updateLoginButton();
     this.createBanner();
     this.createEditButton(() => Modal.openEditModal());
   },
-  // Désactive le mode édition (supprime bannière + bouton)
   disable() {
     const banner = document.querySelector(".editBanner");
     if (banner) banner.remove();
@@ -362,7 +347,6 @@ export const EditMode = {
     const button = document.querySelector(".editButton");
     if (button) button.remove();
   },
-  // Création de la bannière Mode édition
   createBanner() {
     const oldBanner = document.querySelector(".editBanner");
     if (oldBanner) oldBanner.remove();
@@ -375,7 +359,6 @@ export const EditMode = {
     `;
     document.body.prepend(banner);
   },
-  // Création du bouton "modifier" juste après h2 #portfolio
   createEditButton(onClick) {
     const oldButton = document.querySelector(".editButton");
     if (oldButton) oldButton.remove();
@@ -390,7 +373,6 @@ export const EditMode = {
     const h2 = document.querySelector("#portfolio h2");
     h2.insertAdjacentElement("afterend", button);
 
-    // Supprime le menu (filtrage non dispo en mode édition)
     const menu = document.querySelector("menu");
     if (menu) menu.remove();
 
@@ -412,8 +394,8 @@ export const EditMode = {
 
     loginLink.addEventListener("click", (event) => {
       event.preventDefault();
-      Auth.logout(); // logout centralisé
-      this.disable(); // supprime bannière + bouton
+      Auth.logout();
+      this.disable();
     });
   },
 };
@@ -426,7 +408,5 @@ export async function init() {
   Menu.createMenu(allCategories);
   Menu.attachMenuBtnsListeners();
   Menu.toggleActive();
-
-  // active le mode édition si l'utilisateur est connecté
   EditMode.enable();
 }

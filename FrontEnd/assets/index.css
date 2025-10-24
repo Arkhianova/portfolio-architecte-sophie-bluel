@@ -76,7 +76,6 @@ input[type="submit"] {
 }
 
 dialog {
-  transform: translateX(400px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -87,8 +86,9 @@ dialog {
     border-bottom: 2px solid #B3B3B3;
     padding-bottom: 2rem;
   }
-
-
+}
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 dialog:has(button[action='add']) .fa-arrow-left {
