@@ -40,8 +40,6 @@ const Utils = {
   alert(str) {
     if(str === "fetchErrorPostWork") alert("probleme de sauvegarde");
     if(str === "fetchErrorDeleteWork") alert("probleme de suppression");
-
-
   }
 };
 

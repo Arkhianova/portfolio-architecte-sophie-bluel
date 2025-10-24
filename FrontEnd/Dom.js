@@ -204,7 +204,6 @@ export const Modal = {
         const footerBtn = dialog.querySelector(".modalFooter button");
         footerBtn.setAttribute("action", "add");
         footerBtn.disabled = false;
-        footerBtn.style.backgroundColor = "#1D6154";
         footerBtn.textContent = "Ajouter une photo";
       });
     }
@@ -215,6 +214,7 @@ export const Modal = {
       const btn = event.target;
       const currentAction = btn.getAttribute("action");
       if (!currentAction) return;
+
       if (currentAction === "add") {
         const defaultModal = document.querySelector(".modalSectionDefault");
         if (!defaultModal) return;
@@ -261,13 +261,11 @@ export const Modal = {
           const fileInfo = addModal.querySelector("p");
           const titleInput = addModal.querySelector("#titleInput");
           const select = addModal.querySelector("select");
-          const imgUploadDiv = addModal.querySelector(".imageUpload");
 
           if (fileInput) {
             fileInput.addEventListener("change", (e) => {
               if (Utils.isImageInputValid(fileInput)) {
                 const file = e.target.files[0];
-                console.log("file dans IF  VAUT !!!!!!!!!: ", file);
                 if (!file) return;
                 e.target.parentNode.style.padding = "0";
                 const url = URL.createObjectURL(file);
@@ -290,7 +288,6 @@ export const Modal = {
               }
 
               if (Utils.isFormValid(fileInput)) {
-                console.log("fileInput isvalidForm OK");
                 this.unlockSendButton();
               } else {
                 this.lockSendButton();
@@ -307,7 +304,6 @@ export const Modal = {
           if (titleInput) {
             titleInput.addEventListener("input", () => {
               if (Utils.isFormValid(fileInput)) {
-                console.log("titleInput isvalidForm OK");
                 this.unlockSendButton();
               } else {
                 this.lockSendButton();
@@ -317,7 +313,6 @@ export const Modal = {
           if (select) {
             select.addEventListener("change", () => {
               if (Utils.isFormValid(fileInput)) {
-                console.log("select isvalidForm OK");
                 this.unlockSendButton();
               } else {
                 this.lockSendButton();
@@ -329,7 +324,6 @@ export const Modal = {
         //changer le bouton
         btn.textContent = "Valider";
         btn.disabled = true;
-        btn.style.backgroundColor = "#A7A7A7";
         btn.setAttribute("action", "pre-send");
 
         // Affiche la flèche de retour
@@ -337,7 +331,8 @@ export const Modal = {
         if (arrowLeft) {
           arrowLeft.style.visibility = "visible";
         }
-      } else if (currentAction === "send") {
+      } 
+      else if (currentAction === "send") {
         const form = document.querySelector("dialog form");
         const data = new FormData(form);
         Api.addWork(data);
@@ -348,12 +343,10 @@ export const Modal = {
     const btn = document.querySelector(".modalFooter button");
     btn.setAttribute("action", "send");
     btn.disabled = false;
-    btn.style.backgroundColor = "#1D6154";
   },
   lockSendButton() {
     const btn = document.querySelector(".modalFooter button");
     btn.disabled = true;
-    btn.style.backgroundColor = "#A7A7A7";
     btn.setAttribute("action", "pre-send");
   },
   close() {

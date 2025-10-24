@@ -106,7 +106,6 @@ dialog:has(button[action='send']) .fa-arrow-left {
   width: 100%;
 }
 
-
 .modalTitle {
   font-family: 'Work', sans-serif;
   font-weight: 400;
@@ -257,6 +256,25 @@ dialog:has(button[action='send']) .fa-arrow-left {
     border-radius: 60px;
     width: 14.8rem;
   }
+  
+}
+button[action="add"] {
+  background-color: rgb(8, 104, 8);
+}
+button[action="pre-send"] {
+  background-color: #a72a2a;
+}
+button[action="send"] {
+  background-color: rgb(13, 13, 229);
+}
+button[action="add"]:hover {
+  background-color: rgb(24, 129, 99);
+}
+button[action="pre-send"]:hover {
+  background-color: #643030;
+}
+button[action="send"]:hover {
+  background-color: rgb(65, 65, 147);
 }
 
 .scale-out-center {
