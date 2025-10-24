@@ -7,6 +7,14 @@ let initAllWorks = [];
 let filteredWorks = [];
 let allCategories = [];
 
+export const updateWorks = {
+  delete(id) {
+    initAllWorks = initAllWorks.filter((work) => work.id !== id);
+  },
+  add(work) {
+    initAllWorks.push(work);
+  }
+}
 const Menu = {
   createMenuDefaultBtn() {
     const defaultLi = document.createElement("li"); 
@@ -102,7 +110,8 @@ export const Gallery = {
             const el = event.target;
             const fig = el.parentNode;
             const data = fig.getAttribute("data-id");
-            Api.deleteWork(data);
+            Api.deleteWork(Number(data));
+            
           });
           card.appendChild(iconTrash);
         }
@@ -117,6 +126,23 @@ export const Gallery = {
     newCard.appendChild(figcaption);
     document.querySelector(".gallery").append(newCard);
   },
+  removeElement(id) {
+    const dialogElemToRemove = document.querySelector(
+        `dialog figure[data-id="${id}"]`
+      );
+      const galleryElemToRemove = document.querySelector(
+        `.gallery figure[data-id="${id}"]`
+      );
+
+      if (dialogElemToRemove) {
+        dialogElemToRemove.addEventListener("animationend", () => {
+          dialogElemToRemove.remove();
+          if (galleryElemToRemove) galleryElemToRemove.remove();
+        });
+        dialogElemToRemove.classList.add("scale-out-center");
+      }
+
+  }
 };
 export const Modal = {
   createModal() {
@@ -141,6 +167,7 @@ export const Modal = {
     const dialog = this.createModal();
     document.body.append(dialog);
     this.attachModalEvents(dialog);
+    console.log("initAllWorks vaut à l'appel de openEditModal: ", initAllWorks.length);
     Gallery.generateGallery(initAllWorks, "dialog .modalSectionDefault");
     dialog.showModal();
   },
@@ -321,7 +348,7 @@ export const Modal = {
     const btn = document.querySelector(".modalFooter button");
     btn.setAttribute("action", "send");
     btn.disabled = false;
-    btn.style.backgroundColor = "blue";
+    btn.style.backgroundColor = "#1D6154";
   },
   lockSendButton() {
     const btn = document.querySelector(".modalFooter button");

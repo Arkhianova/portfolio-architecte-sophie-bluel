@@ -1,4 +1,4 @@
-import { Gallery, Modal } from "./Dom.js";
+import { Gallery, Modal, updateWorks } from "./Dom.js";
 import Utils from "./Utils.js";
 
 const Api = {
@@ -14,7 +14,7 @@ const Api = {
     const data = await response.json();
     if (!data.token) throw new Error("Pas de token reçu");
 
-    return data; // { token, userId }
+    return data; // { userId, token }
   },
 
   async getWorks() {
@@ -50,22 +50,9 @@ const Api = {
         Utils.alert("fetchErrorDeleteWork");
         return;
       };
-     
-
-      const dialogElemToRemove = document.querySelector(
-        `dialog figure[data-id="${id}"]`
-      );
-      const galleryElemToRemove = document.querySelector(
-        `.gallery figure[data-id="${id}"]`
-      );
-
-      if (dialogElemToRemove) {
-        dialogElemToRemove.addEventListener("animationend", () => {
-          dialogElemToRemove.remove();
-          if (galleryElemToRemove) galleryElemToRemove.remove();
-        });
-        dialogElemToRemove.classList.add("scale-out-center");
-      }
+      Gallery.removeElement(id);
+      updateWorks.delete(id);
+      
     } catch (err) {
       console.error(err);
       alert("Impossible de supprimer cet élément");
@@ -82,15 +69,12 @@ const Api = {
       if(response.ok) {
         const data = await response.json();
         const url = Gallery.tempUrl;
-        console.log("url vaut : ", url);
         const id = data.id;
-        console.log("id vaut : ", id)
         const title = data.title;
-        console.log("title vaut : ", title)
         Gallery.appendCard(id, url, title);
-        alert("Image ajoutée dans la galerie")
+        alert("Image ajoutée dans la galerie");
         Modal.close();
-
+        updateWorks.add(data);
       }
       else {
         Utils.alert("fetchErrorPostWork");

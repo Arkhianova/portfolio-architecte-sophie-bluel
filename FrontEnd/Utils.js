@@ -16,12 +16,14 @@ const Utils = {
     // Vérifie le type du fichier (uniquement JPG / PNG)
     const validTypes = ["image/jpeg", "image/png"];
     if (!validTypes.includes(file.type)) {
+      alert("formats acceptés : jpg/png");
       return false;
     }
 
     // Vérifie la taille max (4 Mo)
     const maxSize = 4 * 1024 * 1024;
     if (file.size > maxSize) {
+      alert("la taille du fichier ne doit pas dépasser 4Mo");
       return false;
     }
     return true; 
