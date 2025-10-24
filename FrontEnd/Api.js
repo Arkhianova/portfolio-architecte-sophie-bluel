@@ -1,4 +1,6 @@
-// Api.js : centralise toutes les requêtes vers l'API
+import { Gallery, Modal } from "./Dom.js";
+import Utils from "./Utils.js";
+
 const Api = {
   async getToken(payload) {
     const response = await fetch("http://localhost:5678/api/users/login", {
@@ -41,10 +43,14 @@ const Api = {
     try {
       const response = await fetch(`http://localhost:5678/api/works/${id}`, {
         method: "DELETE",
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${localStorage.getItem("tokn")}` },
       });
 
-      if (!response.ok) throw new Error("Erreur suppression");
+      if (!response.ok) {
+        Utils.alert("fetchErrorDeleteWork");
+        return;
+      };
+     
 
       const dialogElemToRemove = document.querySelector(
         `dialog figure[data-id="${id}"]`
@@ -68,11 +74,27 @@ const Api = {
 
   async addWork(formData) {
     try {
-      await fetch("http://localhost:5678/api/works", {
+      const response = await fetch("http://localhost:5678/api/works", {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: formData,
       });
+      if(response.ok) {
+        const data = await response.json();
+        const url = Gallery.tempUrl;
+        console.log("url vaut : ", url);
+        const id = data.id;
+        console.log("id vaut : ", id)
+        const title = data.title;
+        console.log("title vaut : ", title)
+        Gallery.appendCard(id, url, title);
+        alert("Image ajoutée dans la galerie")
+        Modal.close();
+
+      }
+      else {
+        Utils.alert("fetchErrorPostWork");
+      }
     } catch (error) {
       console.error("Erreur :", error);
     }

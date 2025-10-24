@@ -1,5 +1,6 @@
 import Api from "./Api.js";
 import Auth from "./Auth.js";
+import Utils from "./Utils.js";
 
 let currentCategory = 0;
 let initAllWorks = [];
@@ -77,7 +78,8 @@ const Menu = {
     });
   },
 };
-const Gallery = {
+export const Gallery = {
+  tempUrl: "",
   createCard(id, url, title) {
     const card = document.createElement("figure");
     card.setAttribute("data-id", id);
@@ -116,8 +118,15 @@ const Gallery = {
       });
     }
   },
+  appendCard(id, url, title) {
+    const newCard = this.createCard(id, url, title);
+    const figcaption = document.createElement("figcaption");
+    figcaption.textContent = title;
+    newCard.appendChild(figcaption);
+    document.querySelector(".gallery").append(newCard);
+  },
 };
-const Modal = {
+export const Modal = {
   createModal() {
     const dialog = document.createElement("dialog");
 
@@ -140,7 +149,6 @@ const Modal = {
     const dialog = this.createModal();
     document.body.append(dialog);
     this.attachModalEvents(dialog);
-    this.setupAddPhotoForm(dialog);
     Gallery.generateGallery(initAllWorks, "dialog .modalSectionDefault");
     dialog.showModal();
   },
@@ -153,7 +161,6 @@ const Modal = {
         dialog.remove();
       });
     }
-
     // Fermer si clic à l’extérieur
     dialog.addEventListener("click", (event) => {
       if (event.target === dialog) {
@@ -162,47 +169,66 @@ const Modal = {
       }
     });
 
-    // TODO : Ajouter la flèche retour si nécessaire
-  },
-  setupAddPhotoForm(dialog) {
-    const addBtn = dialog.querySelector(".modalFooter button[action='add']");
-    if (!addBtn) return;
-
-    addBtn.addEventListener("click", (event) => {
-      const action = event.target.getAttribute("action");
-
-      if (action === "add") {
-        // Passer le bouton en mode "send"
-        event.target.setAttribute("action", "send");
-        event.target.textContent = "Valider";
-        event.target.disabled = true;
-        event.target.style.backgroundColor = "#a7a7a7";
-
-        // Cacher la section modale par défaut
-        const defaultModal = dialog.querySelector(".modalSectionDefault");
-        if (defaultModal) defaultModal.style.display = "none";
+    // Flèche de retour (toujours la même, peu importe la vue)
+    const arrowLeft = dialog.querySelector(".fa-arrow-left");
+    if (arrowLeft) {
+      arrowLeft.addEventListener("click", () => {
+        const defaultModal = document.querySelector(".modalSectionDefault");
+        if (defaultModal) defaultModal.style.display = "grid";
+        //changer le titre
+        document.querySelector(".modalTitle").textContent = "Galerie photo";
+        // Cacher la section ajout
+        const addModal = document.querySelector(".modalSectionAdd");
+        if (addModal) {
+          addModal.innerHTML = "";
+          addModal.style.display = "none";
+        }
+        //cacher la flèche
+        arrowLeft.style.visibility = "hidden";
+        //change bouton attributs
+        const footerBtn = dialog.querySelector(".modalFooter button");
+        footerBtn.setAttribute("action", "add");
+        footerBtn.disabled = false;
+        footerBtn.style.backgroundColor = "#1D6154";
+        footerBtn.textContent = "Ajouter une photo";
+      });
+    }
+    // Bouton footer
+    const modalFooterBtn = dialog.querySelector(".modalFooter button");
+    if (!modalFooterBtn) return;
+    modalFooterBtn.addEventListener("click", (event) => {
+      const btn = event.target;
+      const currentAction = btn.getAttribute("action");
+      if (!currentAction) return;
+      if (currentAction === "add") {
+        //cacher la modale par defaut
+        const defaultModal = document.querySelector(".modalSectionDefault");
+        if (!defaultModal) return;
+        defaultModal.style.display = "none";
 
         // Afficher la section ajout
-        const addModal = dialog.querySelector(".modalSectionAdd");
+        const addModal = document.querySelector(".modalSectionAdd");
         if (addModal) {
+          document.querySelector(".modalTitle").textContent = "Ajout photo";
           addModal.style.display = "flex";
+
           addModal.innerHTML = `
           <form id="addImageForm">
             <div class="imageUpload">
               <img class="imgPreview" src="./assets/icons/img_download.png" alt="icone d'image"/>
               <label for="fileInput" class="fileLabel">+ Ajouter photo</label>
-              <input type="file" id="fileInput" accept="image/*" hidden required />
+              <input type="file" id="fileInput" name="image" accept="image/*" hidden required />
               <p>jpg, png : 4 Mo max</p>
             </div>
             
             <div class="formGroup">
-              <label for="title">Titre</label>
-              <input type="text" id="title" name="title" required />
+              <label for="titleInput">Titre</label>
+              <input type="text" id="titleInput" name="title" required />
             </div>
 
             <div class="formGroup">
               <label for="categorie">Catégorie</label>
-              <select name="categorie" id="categorie" required>
+              <select name="category" id="categorie" required>
                 <option value="" disabled hidden selected></option>
                 ${allCategories
                   .map(
@@ -219,28 +245,105 @@ const Modal = {
           const imgPreview = addModal.querySelector(".imgPreview");
           const fileLabel = addModal.querySelector(".fileLabel");
           const fileInfo = addModal.querySelector("p");
+          const titleInput = addModal.querySelector("#titleInput");
+          const select = addModal.querySelector("select");
+          const imgUploadDiv = addModal.querySelector(".imageUpload");
 
           if (fileInput) {
             fileInput.addEventListener("change", (e) => {
-              const file = e.target.files[0];
-              if (!file) return;
-              e.target.parentNode.style.padding = "0";
-              imgPreview.src = URL.createObjectURL(file);
-              imgPreview.classList.add("imgAdded");
-              document.querySelector(".modalTitle").textContent = "Ajout photo";
-              fileLabel.style.display = "none";
-              e.target.style.display = "none";
-              if (fileInfo) fileInfo.style.display = "none";
+              if (Utils.isImageInputValid(fileInput)) {
+                const file = e.target.files[0];
+                console.log("file dans IF  VAUT !!!!!!!!!: ", file);
+                if (!file) return;
+                e.target.parentNode.style.padding = "0";
+                const url = URL.createObjectURL(file);
+                imgPreview.src = url;
+                Gallery.tempUrl = url;
+                imgPreview.classList.add("imgAdded");
+                fileLabel.style.display = "none";
+                e.target.style.display = "none";
+                if (fileInfo) fileInfo.style.display = "none";
+              } else {
+                // Reset visuel uniquement, pas de innerHTML !
+                e.target.parentNode.style.padding = "1.2rem 0";
+                imgPreview.src = "./assets/icons/img_download.png";
+                imgPreview.classList.remove("imgAdded");
+                fileLabel.style.display = "block";
+                fileInput.style.display = "none";
+                if (fileInfo) fileInfo.style.display = "block";
+                // On efface bien le fichier sélectionné
+                fileInput.value = "";
+              }
 
-              // bouton Valider déjà désactivé ici, logique pour l’activer plus tard si nécessaire
+              if (Utils.isFormValid(fileInput)) {
+                console.log("fileInput isvalidForm OK");
+                this.unlockSendButton();
+              } else {
+                this.lockSendButton();
+              }
+            });
+
+            //changer l’image en cliquant dessus
+            imgPreview.addEventListener("click", () => {
+              if (imgPreview.classList.contains("imgAdded")) {
+                fileInput.click(); // Ouvre à nouveau le sélecteur de fichier
+              }
+            });
+          }
+          if (titleInput) {
+            titleInput.addEventListener("input", () => {
+              if (Utils.isFormValid(fileInput)) {
+                console.log("titleInput isvalidForm OK");
+                this.unlockSendButton();
+              } else {
+                this.lockSendButton();
+              }
+            });
+          }
+          if (select) {
+            select.addEventListener("change", () => {
+              if (Utils.isFormValid(fileInput)) {
+                console.log("select isvalidForm OK");
+                this.unlockSendButton();
+              } else {
+                this.lockSendButton();
+              }
             });
           }
         }
-      } else if (action === "send") {
-        console.log("ici on ferait l’envoi de la photo à l’API");
-        // TODO: appeler Api.addWork() ou autre
+
+        //changer le bouton
+        btn.textContent = "Valider";
+        btn.disabled = true;
+        btn.style.backgroundColor = "#A7A7A7";
+        btn.setAttribute("action", "pre-send");
+
+        // Affiche la flèche de retour
+        const arrowLeft = document.querySelector(".fa-arrow-left");
+        if (arrowLeft) {
+          arrowLeft.style.visibility = "visible";
+        }
+      } else if (currentAction === "send") {
+        const form = document.querySelector("dialog form");
+        const data = new FormData(form);
+        Api.addWork(data);
       }
     });
+  },
+  unlockSendButton() {
+    const btn = document.querySelector(".modalFooter button");
+    btn.setAttribute("action", "send");
+    btn.disabled = false;
+    btn.style.backgroundColor = "blue";
+  },
+  lockSendButton() {
+    const btn = document.querySelector(".modalFooter button");
+    btn.disabled = true;
+    btn.style.backgroundColor = "#A7A7A7";
+    btn.setAttribute("action", "pre-send");
+  },
+  close() {
+    document.querySelector("dialog").remove();
   },
 };
 export const EditMode = {
@@ -327,4 +430,3 @@ export async function init() {
   // active le mode édition si l'utilisateur est connecté
   EditMode.enable();
 }
-

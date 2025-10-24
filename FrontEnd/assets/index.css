@@ -84,7 +84,7 @@ dialog {
   height: 42rem;
 
   section {
-    border-bottom: 3px solid #da1717;
+    border-bottom: 2px solid #B3B3B3;
     padding-bottom: 2rem;
   }
 
@@ -135,12 +135,13 @@ dialog:has(button[action='send']) .fa-arrow-left {
 
     .fa-trash-can {
       position: absolute;
-      right: 1.2rem;
+      right: 0.5rem;
       top: 0.5rem;
       color: white;
       background-color: black;
       border-radius: 4px;
       font-size: 0.8rem;
+      padding: 0.3rem 0.4rem;
     }
   }
 }
@@ -176,7 +177,7 @@ dialog:has(button[action='send']) .fa-arrow-left {
   }
 
   select {
-    appearance: none;
+    /* appearance: none; */
   }
 
   form .formGroup select {
@@ -209,6 +210,7 @@ dialog:has(button[action='send']) .fa-arrow-left {
 
     .imgPreview.imgAdded {
       height: 100%;
+      cursor: pointer; 
     }
 
     p {
