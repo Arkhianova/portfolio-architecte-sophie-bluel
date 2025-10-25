@@ -5,11 +5,8 @@ const Auth = {
     const form = document.querySelector("#login form");
     form.addEventListener("submit", (e) => this.handleLogin(e));
   },
-  handleLogin(e) {
+  handleLogin: async function (e) {
     e.preventDefault();
-    this.handleLoginAsync(e);
-  },
-  handleLoginAsync: async function (e) {
     const payload = this.createPayload(e.target);
     const submitBtn = e.target.querySelector('input[type="submit"]');
     try {
