@@ -192,40 +192,68 @@ export const Modal = {
     const arrowLeft = dialog.querySelector(".fa-arrow-left");
     if (arrowLeft) {
       arrowLeft.addEventListener("click", () => {
-        const defaultModal = document.querySelector(".modalSectionDefault");
-        if (defaultModal) defaultModal.style.display = "grid";
-        document.querySelector(".modalTitle").textContent = "Galerie photo";
-        const addModal = document.querySelector(".modalSectionAdd");
-        if (addModal) {
-          addModal.innerHTML = "";
-          addModal.style.display = "none";
-        }
-        arrowLeft.style.visibility = "hidden";
-        const footerBtn = dialog.querySelector(".modalFooter button");
-        footerBtn.setAttribute("action", "add");
-        footerBtn.disabled = false;
-        footerBtn.textContent = "Ajouter une photo";
+        this.switchModalView("defaut", modalFooterBtn);
       });
     }
+
     // Bouton footer
     const modalFooterBtn = dialog.querySelector(".modalFooter button");
     if (!modalFooterBtn) return;
     modalFooterBtn.addEventListener("click", (event) => {
       const btn = event.target;
-      const currentAction = btn.getAttribute("action");
+      this.handleModalBtnClick(btn);
+    });
+  },
+  unlockSendButton() {
+    const btn = document.querySelector(".modalFooter button");
+    btn.setAttribute("action", "send");
+    btn.disabled = false;
+  },
+  lockSendButton() {
+    const btn = document.querySelector(".modalFooter button");
+    btn.disabled = true;
+    btn.setAttribute("action", "pre-send");
+  },
+  close() {
+    document.querySelector("dialog").remove();
+  },
+  handleModalBtnClick(btn) {
+    const currentAction = btn.getAttribute("action");
       if (!currentAction) return;
 
       if (currentAction === "add") {
-        const defaultModal = document.querySelector(".modalSectionDefault");
-        if (!defaultModal) return;
-        defaultModal.style.display = "none";
-
-        // Afficher la section ajout
+        this.switchModalView("form", btn);
+      }
+      else if (currentAction === "send") {
+        const form = document.querySelector("dialog form");
+        const data = new FormData(form);
+        Api.addWork(data);
+      }
+  },
+  switchModalView(view, btn) {
+    if(view === "defaut") {
+      const defaultModal = document.querySelector(".modalSectionDefault");
+        if (defaultModal) defaultModal.style.display = "grid";
+        this.setModalTitle(view);
         const addModal = document.querySelector(".modalSectionAdd");
         if (addModal) {
-          document.querySelector(".modalTitle").textContent = "Ajout photo";
-          addModal.style.display = "flex";
-
+          addModal.innerHTML = "";
+          addModal.style.display = "none";
+        }
+        const arrowLeft = document.querySelector(".fa-arrow-left");
+        arrowLeft.style.visibility = "hidden";
+        const footerBtn = document.querySelector(".modalFooter button");
+        footerBtn.setAttribute("action", "add");
+        footerBtn.disabled = false;
+        footerBtn.textContent = "Ajouter une photo";
+    }
+    else if (view === "form") {
+      const defaultModal = document.querySelector(".modalSectionDefault");
+        if (!defaultModal) return;
+        defaultModal.style.display = "none";
+      const addModal = document.querySelector(".modalSectionAdd");
+      if (addModal) {
+        addModal.style.display = "flex";
           addModal.innerHTML = `
           <form id="addImageForm">
             <div class="imageUpload">
@@ -253,9 +281,34 @@ export const Modal = {
             </div>
           </form>
         `;
+        this.setModalTitle(view);
+        this.setupImagePreview(addModal);
+        
+        //changer le bouton
+        btn.textContent = "Valider";
+        btn.disabled = true;
+        btn.setAttribute("action", "pre-send");
 
-          // Gestion de la preview d’image
-          const fileInput = addModal.querySelector("#fileInput");
+        // Affiche la flèche de retour
+        const arrowLeft = document.querySelector(".fa-arrow-left");
+        if (arrowLeft) {
+          arrowLeft.style.visibility = "visible";
+        }
+      }
+    }
+  },
+  setModalTitle(view) {
+    const modalTitle = document.querySelector(".modalTitle");
+    if(view === "defaut") {
+      modalTitle.textContent = "Galerie photo";
+    }
+    else if(view === "form") {
+      modalTitle.textContent = "Ajouter une photo";
+    }
+    
+  },
+  setupImagePreview(addModal) {
+    const fileInput = addModal.querySelector("#fileInput");
           const imgPreview = addModal.querySelector(".imgPreview");
           const fileLabel = addModal.querySelector(".fileLabel");
           const fileInfo = addModal.querySelector("p");
@@ -319,39 +372,14 @@ export const Modal = {
               }
             });
           }
-        }
+  },
+  updateImagePreview() {
 
-        //changer le bouton
-        btn.textContent = "Valider";
-        btn.disabled = true;
-        btn.setAttribute("action", "pre-send");
+  },
+  resetImagePreview() {
 
-        // Affiche la flèche de retour
-        const arrowLeft = document.querySelector(".fa-arrow-left");
-        if (arrowLeft) {
-          arrowLeft.style.visibility = "visible";
-        }
-      } 
-      else if (currentAction === "send") {
-        const form = document.querySelector("dialog form");
-        const data = new FormData(form);
-        Api.addWork(data);
-      }
-    });
-  },
-  unlockSendButton() {
-    const btn = document.querySelector(".modalFooter button");
-    btn.setAttribute("action", "send");
-    btn.disabled = false;
-  },
-  lockSendButton() {
-    const btn = document.querySelector(".modalFooter button");
-    btn.disabled = true;
-    btn.setAttribute("action", "pre-send");
-  },
-  close() {
-    document.querySelector("dialog").remove();
-  },
+  }
+
 };
 export const EditMode = {
   enable() {
