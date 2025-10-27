@@ -62,17 +62,16 @@ const Menu = {
   },
   attachMenuBtnsListeners() {
     const buttonsArray = document.querySelectorAll("menu button");
-    buttonsArray.forEach((btn, idx) => {
+    buttonsArray.forEach((btn) => {
       btn.addEventListener("click", () => {
-        currentCategory = idx;
         const categoryId = parseInt(btn.getAttribute("data-id"));
+        currentCategory = categoryId;
         filteredWorks =
           categoryId === 0
             ? initAllWorks
             : initAllWorks.filter((work) => work.categoryId === categoryId);
         const gallery = document.querySelector(".gallery");
         gallery.innerHTML = "";
-
         this.toggleActive();
         Gallery.generateGallery(filteredWorks);
       });
