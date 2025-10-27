@@ -259,22 +259,19 @@ dialog:has(button[action='send']) .fa-arrow-left {
   
 }
 button[action="add"] {
-  background-color: rgb(8, 104, 8);
+  background-color: #1D6154;
 }
 button[action="pre-send"] {
-  background-color: #a72a2a;
+  background-color: #A7A7A7;
 }
 button[action="send"] {
-  background-color: rgb(13, 13, 229);
+  background-color: #1D6154;
 }
 button[action="add"]:hover {
-  background-color: rgb(24, 129, 99);
-}
-button[action="pre-send"]:hover {
-  background-color: #643030;
+  background-color: #0E2F28;
 }
 button[action="send"]:hover {
-  background-color: rgb(65, 65, 147);
+  background-color: #0E2F28;
 }
 
 .scale-out-center {

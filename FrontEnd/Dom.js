@@ -12,12 +12,12 @@ export const updateWorks = {
     initAllWorks = initAllWorks.filter((work) => work.id !== id);
   },
   add(work) {
-    initAllWorks.push(work);
-  }
-}
+    initAllWorks.unshift(work);
+  },
+};
 const Menu = {
   createMenuDefaultBtn() {
-    const defaultLi = document.createElement("li"); 
+    const defaultLi = document.createElement("li");
     const defaultButton = document.createElement("button");
     defaultButton.setAttribute("data-id", 0);
     defaultButton.textContent = "Tous";
@@ -111,7 +111,6 @@ export const Gallery = {
             const fig = el.parentNode;
             const data = fig.getAttribute("data-id");
             Api.deleteWork(Number(data));
-            
           });
           card.appendChild(iconTrash);
         }
@@ -124,25 +123,24 @@ export const Gallery = {
     const figcaption = document.createElement("figcaption");
     figcaption.textContent = title;
     newCard.appendChild(figcaption);
-    document.querySelector(".gallery").append(newCard);
+    document.querySelector(".gallery").prepend(newCard);
   },
   removeElement(id) {
     const dialogElemToRemove = document.querySelector(
-        `dialog figure[data-id="${id}"]`
-      );
-      const galleryElemToRemove = document.querySelector(
-        `.gallery figure[data-id="${id}"]`
-      );
+      `dialog figure[data-id="${id}"]`
+    );
+    const galleryElemToRemove = document.querySelector(
+      `.gallery figure[data-id="${id}"]`
+    );
 
-      if (dialogElemToRemove) {
-        dialogElemToRemove.addEventListener("animationend", () => {
-          dialogElemToRemove.remove();
-          if (galleryElemToRemove) galleryElemToRemove.remove();
-        });
-        dialogElemToRemove.classList.add("scale-out-center");
-      }
-
-  }
+    if (dialogElemToRemove) {
+      dialogElemToRemove.addEventListener("animationend", () => {
+        dialogElemToRemove.remove();
+        if (galleryElemToRemove) galleryElemToRemove.remove();
+      });
+      dialogElemToRemove.classList.add("scale-out-center");
+    }
+  },
 };
 export const Modal = {
   createModal() {
@@ -167,7 +165,6 @@ export const Modal = {
     const dialog = this.createModal();
     document.body.append(dialog);
     this.attachModalEvents(dialog);
-    console.log("initAllWorks vaut à l'appel de openEditModal: ", initAllWorks.length);
     Gallery.generateGallery(initAllWorks, "dialog .modalSectionDefault");
     dialog.showModal();
   },
@@ -187,12 +184,11 @@ export const Modal = {
         dialog.remove();
       }
     });
-
     // Flèche de retour
     const arrowLeft = dialog.querySelector(".fa-arrow-left");
     if (arrowLeft) {
       arrowLeft.addEventListener("click", () => {
-        this.switchModalView("defaut", modalFooterBtn);
+        Modal.view.switchModalView("defaut", modalFooterBtn);
       });
     }
 
@@ -201,59 +197,68 @@ export const Modal = {
     if (!modalFooterBtn) return;
     modalFooterBtn.addEventListener("click", (event) => {
       const btn = event.target;
-      this.handleModalBtnClick(btn);
+      Modal.button.handleModalBtnClick(btn);
     });
-  },
-  unlockSendButton() {
-    const btn = document.querySelector(".modalFooter button");
-    btn.setAttribute("action", "send");
-    btn.disabled = false;
-  },
-  lockSendButton() {
-    const btn = document.querySelector(".modalFooter button");
-    btn.disabled = true;
-    btn.setAttribute("action", "pre-send");
   },
   close() {
     document.querySelector("dialog").remove();
   },
-  handleModalBtnClick(btn) {
-    const currentAction = btn.getAttribute("action");
+  button: {
+    toggleSendAction(state) {
+      const btn = document.querySelector(".modalFooter button");
+      if (state === true) {
+        btn.setAttribute("action", "send");
+        btn.disabled = false;
+      }
+      else {
+        btn.disabled = true;
+        btn.setAttribute("action", "pre-send");
+      }
+    },
+    handleModalBtnClick(btn) {
+      const currentAction = btn.getAttribute("action");
       if (!currentAction) return;
 
       if (currentAction === "add") {
-        this.switchModalView("form", btn);
-      }
-      else if (currentAction === "send") {
+        Modal.view.switchModalView("form", btn);
+      } else if (currentAction === "send") {
         const form = document.querySelector("dialog form");
         const data = new FormData(form);
         Api.addWork(data);
       }
+    },
   },
-  switchModalView(view, btn) {
-    if(view === "defaut") {
+  view: {
+    switchModalView(view, btn) {
+      if (view === "defaut") {
+        Modal.view.toggleDefaultView("show", btn);
+        Modal.view.toggleFormView("hide", btn);
+        Modal.view.setModalTitle(view);
+      } else if (view === "form") {
+        Modal.view.toggleDefaultView("hide", btn);
+        Modal.view.toggleFormView("show", btn);
+        Modal.view.setModalTitle(view);
+      }
+    },
+    toggleDefaultView(display, btn) {
       const defaultModal = document.querySelector(".modalSectionDefault");
+      const arrowLeft = document.querySelector(".fa-arrow-left");
+      if (display === "show") {
         if (defaultModal) defaultModal.style.display = "grid";
-        this.setModalTitle(view);
-        const addModal = document.querySelector(".modalSectionAdd");
-        if (addModal) {
-          addModal.innerHTML = "";
-          addModal.style.display = "none";
-        }
-        const arrowLeft = document.querySelector(".fa-arrow-left");
         arrowLeft.style.visibility = "hidden";
-        const footerBtn = document.querySelector(".modalFooter button");
-        footerBtn.setAttribute("action", "add");
-        footerBtn.disabled = false;
-        footerBtn.textContent = "Ajouter une photo";
-    }
-    else if (view === "form") {
-      const defaultModal = document.querySelector(".modalSectionDefault");
-        if (!defaultModal) return;
+        btn.setAttribute("action", "add");
+        btn.disabled = false;
+        btn.textContent = "Ajouter une photo";
+      } else if (display === "hide") {
         defaultModal.style.display = "none";
+      }
+    },
+    toggleFormView(display, btn) {
       const addModal = document.querySelector(".modalSectionAdd");
-      if (addModal) {
-        addModal.style.display = "flex";
+      const arrowLeft = document.querySelector(".fa-arrow-left");
+      if (display === "show") {
+        if (addModal) {
+          addModal.style.display = "flex";
           addModal.innerHTML = `
           <form id="addImageForm">
             <div class="imageUpload">
@@ -281,105 +286,96 @@ export const Modal = {
             </div>
           </form>
         `;
-        this.setModalTitle(view);
-        this.setupImagePreview(addModal);
-        
-        //changer le bouton
-        btn.textContent = "Valider";
-        btn.disabled = true;
-        btn.setAttribute("action", "pre-send");
-
-        // Affiche la flèche de retour
-        const arrowLeft = document.querySelector(".fa-arrow-left");
+          Modal.form.setupImagePreview(addModal);
+          btn.textContent = "Valider";
+          btn.disabled = true;
+          btn.setAttribute("action", "pre-send");
+        }
         if (arrowLeft) {
           arrowLeft.style.visibility = "visible";
         }
+      } else if (display === "hide") {
+        if (addModal) {
+          addModal.innerHTML = "";
+          addModal.style.display = "none";
+        }
+      }
+    },
+    setModalTitle(view) {
+      const modalTitle = document.querySelector(".modalTitle");
+      if (view === "defaut") {
+        modalTitle.textContent = "Galerie photo";
+      } else if (view === "form") {
+        modalTitle.textContent = "Ajouter une photo";
       }
     }
   },
-  setModalTitle(view) {
-    const modalTitle = document.querySelector(".modalTitle");
-    if(view === "defaut") {
-      modalTitle.textContent = "Galerie photo";
-    }
-    else if(view === "form") {
-      modalTitle.textContent = "Ajouter une photo";
-    }
-    
-  },
-  setupImagePreview(addModal) {
+  form: {
+    setupImagePreview(addModal) {
     const fileInput = addModal.querySelector("#fileInput");
-          const imgPreview = addModal.querySelector(".imgPreview");
-          const fileLabel = addModal.querySelector(".fileLabel");
-          const fileInfo = addModal.querySelector("p");
-          const titleInput = addModal.querySelector("#titleInput");
-          const select = addModal.querySelector("select");
+    const imgPreview = addModal.querySelector(".imgPreview");
+    const fileLabel = addModal.querySelector(".fileLabel");
+    const fileInfo = addModal.querySelector("p");
+    const titleInput = addModal.querySelector("#titleInput");
+    const select = addModal.querySelector("select");
 
-          if (fileInput) {
-            fileInput.addEventListener("change", (e) => {
-              if (Utils.isImageInputValid(fileInput)) {
-                const file = e.target.files[0];
-                if (!file) return;
-                e.target.parentNode.style.padding = "0";
-                const url = URL.createObjectURL(file);
-                imgPreview.src = url;
-                Gallery.tempUrl = url;
-                imgPreview.classList.add("imgAdded");
-                fileLabel.style.display = "none";
-                e.target.style.display = "none";
-                if (fileInfo) fileInfo.style.display = "none";
-              } else {
-                // Reset visuel uniquement, pas de innerHTML !
-                e.target.parentNode.style.padding = "1.2rem 0";
-                imgPreview.src = "./assets/icons/img_download.png";
-                imgPreview.classList.remove("imgAdded");
-                fileLabel.style.display = "block";
-                fileInput.style.display = "none";
-                if (fileInfo) fileInfo.style.display = "block";
-                // On efface bien le fichier sélectionné
-                fileInput.value = "";
-              }
+    if (fileInput) {
+      fileInput.addEventListener("change", (e) => {
+        const input = e.target;
+        Utils.isImageInputValid(input) === true
+          ? Modal.form.updateImagePreview(input, imgPreview, fileLabel, fileInfo)
+          : Modal.form.resetImagePreview(input, imgPreview, fileLabel, fileInfo);
+        Utils.isFormValid(fileInput) === true
+          ? Modal.button.toggleSendAction(true)
+          : Modal.button.toggleSendAction(false);
+      });
 
-              if (Utils.isFormValid(fileInput)) {
-                this.unlockSendButton();
-              } else {
-                this.lockSendButton();
-              }
-            });
-
-            //changer l’image en cliquant dessus
-            imgPreview.addEventListener("click", () => {
-              if (imgPreview.classList.contains("imgAdded")) {
-                fileInput.click(); // Ouvre à nouveau le sélecteur de fichier
-              }
-            });
-          }
-          if (titleInput) {
-            titleInput.addEventListener("input", () => {
-              if (Utils.isFormValid(fileInput)) {
-                this.unlockSendButton();
-              } else {
-                this.lockSendButton();
-              }
-            });
-          }
-          if (select) {
-            select.addEventListener("change", () => {
-              if (Utils.isFormValid(fileInput)) {
-                this.unlockSendButton();
-              } else {
-                this.lockSendButton();
-              }
-            });
-          }
+      //changer l’image en cliquant dessus
+      imgPreview.addEventListener("click", () => {
+        if (imgPreview.classList.contains("imgAdded")) {
+          fileInput.click(); // Ouvre à nouveau le sélecteur de fichier
+        }
+      });
+    }
+    if (titleInput) {
+      titleInput.addEventListener("input", () => {
+        Utils.isFormValid(fileInput) === true
+          ? Modal.button.toggleSendAction(true)
+          : Modal.button.toggleSendAction(false);
+      });
+    }
+    if (select) {
+      select.addEventListener("change", () => {
+        Utils.isFormValid(fileInput) === true
+          ? Modal.button.toggleSendAction(true)
+          : Modal.button.toggleSendAction(false);
+      });
+    }
   },
-  updateImagePreview() {
-
+  updateImagePreview(fileInput, imgPreview, fileLabel, fileInfo) {
+    const file = fileInput.files[0];
+    if (!file) return;
+    fileInput.parentNode.style.padding = "0";
+    const url = URL.createObjectURL(file);
+    imgPreview.src = url;
+    Gallery.tempUrl = url;
+    imgPreview.classList.add("imgAdded");
+    fileLabel.style.display = "none";
+    fileInput.style.display = "none";
+    if (fileInfo) fileInfo.style.display = "none";
   },
-  resetImagePreview() {
-
+  resetImagePreview(fileInput, imgPreview, fileLabel, fileInfo) {
+    // Reset visuel uniquement, pas de innerHTML !
+    fileInput.parentNode.style.padding = "1.2rem 0";
+    imgPreview.src = "./assets/icons/img_download.png";
+    imgPreview.classList.remove("imgAdded");
+    fileLabel.style.display = "block";
+    fileInput.style.display = "none";
+    if (fileInfo) fileInfo.style.display = "block";
+    // On efface bien le fichier sélectionné
+    fileInput.value = "";
   }
-
+  },
 };
 export const EditMode = {
   enable() {
