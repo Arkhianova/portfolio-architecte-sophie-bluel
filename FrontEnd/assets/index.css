@@ -175,10 +175,6 @@ dialog:has(button[action='send']) .fa-arrow-left {
     border: none;
   }
 
-  select {
-    /* appearance: none; */
-  }
-
   form .formGroup select {
     border: none;
 
